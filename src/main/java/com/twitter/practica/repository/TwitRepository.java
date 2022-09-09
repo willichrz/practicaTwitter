@@ -14,10 +14,5 @@ public class TwitRepository {
             new User(2L, "willi@gmail.com", "4321")
     );
 
-    public User getUser(Long userId) {
-        return users.stream()
-                .filter(u -> u.getId().equals(userId))
-                .findFirst()
-                .orElseThrow(RuntimeException::new);
-    }
+
 }

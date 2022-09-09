@@ -4,7 +4,7 @@ import com.twitter.practica.business.Twit;
 import com.twitter.practica.business.User;
 import com.twitter.practica.dto.TwitResponseDTO;
 import com.twitter.practica.dto.TwitterCreationDTO;
-import com.twitter.practica.services.TwitService;
+//import com.twitter.practica.services.TwitService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,14 +21,15 @@ public class TwitController {
             new User(2L, "willichrz@gmail.com", "asdasd")
     );
 
+    private static Long twitCount = 1L;
 
-    private final TwitService twitService;
+    //private final TwitService twitService;
 
 
-    @Autowired
-    public TwitController(TwitService twitService){
-        this.twitService = twitService;
-    }
+//    @Autowired
+//    public TwitController(TwitService twitService){
+//        this.twitService = twitService;
+//    }
 
 
     @GetMapping("/health-check")
@@ -39,14 +40,21 @@ public class TwitController {
     @PostMapping("/user/{userId}/twits")
     public ResponseEntity<?> createTwit(@RequestBody TwitterCreationDTO request, @PathVariable Long userId){
 
-        twitService.createTwit(userId, request);
+        User user = getUser(userId);
+
+        Twit twit = new Twit(twitCount, request.getTwit());
+
+        user.twit(twit);
+
+        twitCount++;
+
 
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/user/{userId}/twits")
     public ResponseEntity<List<TwitResponseDTO>> getTwits(@PathVariable Long userId){
-        User user = getuser(userId);
+        User user = getUser(userId);
 
         List<Twit> twits = user.getTwits();
 
@@ -59,17 +67,18 @@ public class TwitController {
 
     @PatchMapping("/user/{userid}/twits/{twitId}/like")
     public ResponseEntity<?> like(@PathVariable Long userId, @PathVariable Long twitId){
-        User user = getuser(userId);
+        User user = getUser(userId);
         Twit twit = user.giveMeTheTwit(twitId);
         twit.like();
         return ResponseEntity.ok().build();
     }
 
-    private User getuser(Long userId) {
+    public User getUser(Long userId) {
         return users.stream()
                 .filter(u -> u.getId().equals(userId))
                 .findFirst()
                 .orElseThrow(RuntimeException::new);
     }
+
 }
 
