@@ -40,9 +40,8 @@ public class TwitController {
 
     @GetMapping("/user/{userId}/twits")
     public ResponseEntity<List<TwitResponseDTO>> getTwits(@PathVariable Long userId){
-        User user = twitService.getUser(userId);
 
-        List<Twit> twits = user.getTwits();
+        List<Twit> twits = twitService.getTwits(userId);
 
         List<TwitResponseDTO> twitResponse = twits.stream()
                 .map(t -> new TwitResponseDTO(t.getId(), t.getContent(), t.getCreationDate().toLocalDate(), t.getLikes()))
@@ -53,9 +52,7 @@ public class TwitController {
 
     @PatchMapping("/user/{userId}/twits/{twitId}/like")
     public ResponseEntity<?> like(@PathVariable Long userId, @PathVariable Long twitId){
-        User user = twitService.getUser(userId);
-        Twit twit = user.giveMeTheTwit(twitId);
-        twit.like();
+        twitService.like(userId, twitId);
         return ResponseEntity.ok().build();
     }
 
